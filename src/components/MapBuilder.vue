@@ -127,6 +127,9 @@ export default {
       if(this.jsonImport == null) {
         return;
       }
+      this.imgs = [];
+      this.playerCount = 0;
+      this.exitCount = 0;
       let jsonData = JSON.parse(this.jsonImport);
       for(let i=0;i<jsonData.map.length;i++) {
         let templ = this.templatesByType[jsonData.map[i].type];
@@ -139,7 +142,15 @@ export default {
           "type": templ.type,
           "isback": templ.isback
         });
+        if(templ.type == 'robot_caring') {
+          this.playerCount++;
+        }
+        if(templ.type == 'exit') {
+          this.exitCount++;
+        }
       }
+      this.modalImportShow = false;
+      this.jsonImport = null;
       // for(let prop in jsonData.map) {
       //
       // }
