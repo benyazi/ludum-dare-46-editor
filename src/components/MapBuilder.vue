@@ -3,6 +3,7 @@
   <div class="map-list">
     <div class="map-actions">
       <div class="map-export-btn" @click="exportJson">Export to JSON</div>
+      <div class="map-export-btn" @click="importJson">Impor from JSON</div>
       <div class="map-export-name">
         <input v-model="levelName">
       </div>
@@ -58,6 +59,20 @@
         </div>
       </div>
     </div>
+    <div class="result-modal-back" v-if="modalImportShow">
+      <div class="result-modal">
+        <div class="result-modal-head">
+          Import data:
+        </div>
+        <div class="result-modal-body">
+          <textarea style="width: 100%;" v-model="jsonImport" rows="15"></textarea>
+        </div>
+        <div class="result-modal-footer">
+          <button @click="modalImportShow = false">Close</button>
+          <button @click="importData()">Import</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -69,6 +84,8 @@ export default {
   },
   data() {
   return {
+    templatesByType: {},
+    jsonImport: null,
     reactorMode: false,
     levelName: null,
     reactors: [],
@@ -85,6 +102,7 @@ export default {
   templates: [],
   imgs: [],
     modalResultShow: false,
+    modalImportShow: false,
     jsonResult: null,
   selectedBlock: null,
   selectedTemplate: null,
@@ -102,6 +120,30 @@ export default {
     this.loadTemplates();
   },
   methods: {
+    importJson() {
+      this.modalImportShow = true;
+    },
+    importData() {
+      if(this.jsonImport == null) {
+        return;
+      }
+      let jsonData = JSON.parse(this.jsonImport);
+      for(let i=0;i<jsonData.map.length;i++) {
+        let templ = this.templatesByType[jsonData.map[i].type];
+        let pos = {};
+        pos["x"] = jsonData.map[i].pos.j*32;
+        pos["y"] = jsonData.map[i].pos.i*32;
+        this.imgs.push({
+          "image": templ.image,
+          "pos": pos,
+          "type": templ.type,
+          "isback": templ.isback
+        });
+      }
+      // for(let prop in jsonData.map) {
+      //
+      // }
+    },
     exportJson() {
       if(this.playerCount!==1) {
         alert('need 1 robot in map');
@@ -187,11 +229,17 @@ export default {
         {"image": "/blocks/pipe_huge_elbow3.png","width": 32,"height":32,"type":"pipe_huge_elbow3", "isback": false},
         {"image": "/blocks/pipe_huge_elbow4.png","width": 32,"height":32,"type":"pipe_huge_elbow4", "isback": false},
         {"image": "/blocks/pipe_huge_v.png","width": 32,"height":32,"type":"pipe_huge_v", "isback": false},
+        {"image": "/blocks/pipe_huge_elbow_back.png","width": 32,"height":32,"type":"pipe_huge_elbow_back", "isback": false},
+        {"image": "/blocks/pipe_huge_elbow_front_closed.png","width": 32,"height":32,"type":"pipe_huge_elbow_front_closed", "isback": false},
+        {"image": "/blocks/pipe_huge_elbow_front_open.png","width": 32,"height":32,"type":"pipe_huge_elbow_front_open", "isback": false},
         {"image": "/blocks/platform.png","width": 32,"height":32,"type":"platform", "isback": false},
         {"image": "/blocks/platform_snowy.png","width": 32,"height":32,"type":"platform_snowy", "isback": false},
         {"image": "/blocks/snow2.png","width": 32,"height":32,"type":"snow2", "isback": false}
       ];
       this.templates = list;
+      for(let i=0;i<list.length;i++) {
+        this.templatesByType[list[i].type] = list[i];
+      }
       this.selectedTemplate = 0;
 
     },
