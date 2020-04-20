@@ -156,10 +156,12 @@ export default {
       this.playerCount = 0;
       this.exitCount = 0;
       let jsonData = JSON.parse(this.jsonImport);
-      for(let i=0;i<jsonData.messages.length;i++) {
-        this.levelMessages.push({
-          "text": jsonData.messages[i].text
-        });
+      if(jsonData.messages !== undefined) {
+        for (let i = 0; i < jsonData.messages.length; i++) {
+          this.levelMessages.push({
+            "text": jsonData.messages[i].text
+          });
+        }
       }
       for(let i=0;i<jsonData.map.length;i++) {
         let templ = this.templatesByType[jsonData.map[i].type];
