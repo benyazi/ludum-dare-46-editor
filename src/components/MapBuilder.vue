@@ -283,7 +283,8 @@ export default {
         {"image": "/blocks/pipe_huge_elbow_front_open.png","width": 32,"height":32,"type":"pipe_huge_elbow_front_open", "isback": false},
         {"image": "/blocks/platform.png","width": 32,"height":32,"type":"platform", "isback": false},
         {"image": "/blocks/platform_snowy.png","width": 32,"height":32,"type":"platform_snowy", "isback": false},
-        {"image": "/blocks/snow2.png","width": 32,"height":32,"type":"snow2", "isback": false}
+        {"image": "/blocks/snow2.png","width": 32,"height":32,"type":"snow2", "isback": false},
+        {"image": "/blocks/energy.png","width": 32,"height":32,"type":"energy", "isback": true}
       ];
       this.templates = list;
       for(let i=0;i<list.length;i++) {
