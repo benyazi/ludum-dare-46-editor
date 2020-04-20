@@ -4,6 +4,7 @@
     <div class="map-actions">
       <div class="map-export-btn" @click="exportJson">Export to JSON</div>
       <div class="map-export-btn" @click="importJson">Impor from JSON</div>
+      <div class="map-export-btn" @click="modalMsgShow = true">Edit messages ({{levelMessages.length}})</div>
       <div class="map-export-name">
         <input v-model="levelName">
       </div>
@@ -59,6 +60,27 @@
         </div>
       </div>
     </div>
+    <div class="result-modal-back" v-if="modalMsgShow">
+      <div class="result-modal">
+        <div class="result-modal-head">
+          Messages:
+        </div>
+        <div class="result-modal-body">
+          <div v-for="(msg, ind) in levelMessages" style="margin-bottom: 15px;" :key="'key-msg-' + ind">
+            <div style="width: 80%;display: inline-block;">
+              <textarea style="width: 100%;" v-model="msg.text" rows="1"></textarea>
+            </div>
+            <div style="width: 20%;display: inline-block;">
+              <button @click="removeMsg(ind)">remove</button>
+            </div>
+          </div>
+        </div>
+        <div class="result-modal-footer">
+          <button @click="levelMessages.push({text:''})">Add message</button>
+          <button @click="modalMsgShow = false">Close</button>
+        </div>
+      </div>
+    </div>
     <div class="result-modal-back" v-if="modalImportShow">
       <div class="result-modal">
         <div class="result-modal-head">
@@ -101,7 +123,9 @@ export default {
   blocks: [],
   templates: [],
   imgs: [],
+    levelMessages: [],
     modalResultShow: false,
+    modalMsgShow: false,
     modalImportShow: false,
     jsonResult: null,
   selectedBlock: null,
@@ -128,9 +152,15 @@ export default {
         return;
       }
       this.imgs = [];
+      this.levelMessages = [];
       this.playerCount = 0;
       this.exitCount = 0;
       let jsonData = JSON.parse(this.jsonImport);
+      for(let i=0;i<jsonData.messages.length;i++) {
+        this.levelMessages.push({
+          "text": jsonData.messages[i].text
+        });
+      }
       for(let i=0;i<jsonData.map.length;i++) {
         let templ = this.templatesByType[jsonData.map[i].type];
         let pos = {};
@@ -177,6 +207,13 @@ export default {
       //   return;
       // }
       let finalJson = [];
+      let msgs = [];
+      for(let i=0;i<this.levelMessages.length;i++) {
+        msgs.push({
+          "text": this.levelMessages[i].text
+        });
+      }
+
       for(let i=0;i<this.imgs.length;i++) {
         let im = this.imgs[i];
         finalJson.push({
@@ -190,7 +227,8 @@ export default {
 
       this.jsonResult = JSON.stringify({
         title: 'level_1',
-        map: finalJson
+        map: finalJson,
+        messages: msgs
       });
       this.modalResultShow = true;
     },
@@ -253,6 +291,9 @@ export default {
       }
       this.selectedTemplate = 0;
 
+    },
+    removeMsg(ind) {
+      this.levelMessages.splice(ind,1);
     },
     removeImg(ind) {
       let img = this.imgs[ind];
